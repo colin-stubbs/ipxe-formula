@@ -1,4 +1,4 @@
-{% import_yaml "ipxe/defaults.yaml" as defaults %}
+{% import_yaml "ipxe/defaults.yaml" as default_settings %}
 
 {% set os_family_map = salt['grains.filter_by']({
     'Debian': {},
@@ -8,6 +8,11 @@
   }, grain='os_family', merge=salt['pillar.get']('ipxe'))
 %}
 
-{% do defaults.ipxe.lookup.update(os_family_map.lookup) if os_family_map.lookup is defined %}
+{% do default_settings.ipxe.update(os_family_map) %}
 
-{% set ipxe = defaults.ipxe %}
+{% set ipxe_settings = salt['pillar.get'](
+    'ipxe',
+    default=default_settings.ipxe,
+    merge=True,
+  )
+%}
