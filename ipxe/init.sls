@@ -33,8 +33,7 @@ ipxe-boot-image-{{ boot_image }}:
 
 {% if 'web_content' in ipxe_settings.distribute %}
 ipxe-{{ ipxe_settings.lookup.locations.web_root }}:
-  file.directory:
-    - makedirs: True
+  file.recurse:
     - name: {{ ipxe_settings.lookup.locations.web_root }}
     - source: {{ ipxe_settings.distribute.web_content }}
     - user: {{ ipxe_settings.distribute.user|default('root') }}
