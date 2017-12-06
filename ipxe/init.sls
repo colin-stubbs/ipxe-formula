@@ -8,7 +8,7 @@ ipxe-pkgs:
     - pkgs: {{ ipxe_settings.lookup.pkgs }}
 {% endif %}
 
-{% if 'copy' in ipxe %}
+{% if 'copy' in ipxe_settings %}
 {% if 'boot_images' in ipxe_settings.copy %}
 {% for boot_image in ipxe_settings.copy.boot_images %}
 ipxe-boot-image-{{ boot_image }}:
@@ -44,7 +44,7 @@ ipxe-web-content-restorecon:
 {% endif %}
 {% endif %}
 
-{% if 'config' in ipxe %}
+{% if 'config' in ipxe_settings %}
 ipxe-web-content-directory:
   file.directory:
     - makedirs: True
