@@ -10,6 +10,14 @@ ipxe-pkgs:
 
 {% if 'distribute' in ipxe_settings %}
 {% if 'boot_images' in ipxe_settings.distribute %}
+{{ ipxe_settings.lookup.locations.tftp_root }}:
+  file.directory:
+    - makedirs: True
+    - user: {{ ipxe_settings.distribute.user|default('root') }}
+    - group: {{ ipxe_settings.distribute.group|default('root') }}
+    - dir_mode: {{ ipxe_settings.distribute.dir_mode|default('0755') }}
+    - file_mode: {{ ipxe_settings.distribute.file_mode|default('0444') }}
+
 {% for boot_image in ipxe_settings.distribute.boot_images %}
 ipxe-boot-image-{{ boot_image }}:
   file.managed:
@@ -18,6 +26,8 @@ ipxe-boot-image-{{ boot_image }}:
     - user: {{ ipxe_settings.distribute.user|default('root') }}
     - group: {{ ipxe_settings.distribute.group|default('root') }}
     - mode: {{ ipxe_settings.distribute.mode|default('0444') }}
+    - require:
+      - file: {{ ipxe_settings.lookup.locations.tftp_root }}
 {% endfor %}
 {% endif %}
 
