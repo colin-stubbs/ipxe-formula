@@ -1,16 +1,8 @@
-# -*- coding: utf-8 -*-
-# vim: ft=yaml
 ipxe:
   lookup:
-    base_dir: '/srv/www/html'
-    boot_dir: '/boot'
-    boot_file: 'boot.ipxe'
-    boot_file_source: 'salt://ipxe/templates/boot.ipxe.jinja'
-    menu_file: 'menu.ipxe'
-    menu_file_source: 'salt://ipxe/templates/menu.ipxe.jinja'
-    menu_file_timeout: 0
-    bootstrap_file: '/srv/tftp/undionly.kpxe'
-    bootstrap_source: 'http://boot.ipxe.org/undionly.kpxe'
-    bootstrap_source_hash: '9d7168242f463eab241e4e56a2a2dfb97ce3fc5598357d8a82599d14290f3cd9'
-  scripts: {}
-
+    pkgs:
+      - ipxe-bootimgs
+    locations:
+      web_root: '/var/www/html'
+      tftp_root: '/var/lib/tftpboot'
+      boot_images: '/usr/share/ipxe'

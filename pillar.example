@@ -1,118 +1,29 @@
-#!yamlex
-ipxe: !aggregate
-  lookup: !aggregate
-    boot_url: http://192.168.33.102
-  scripts: !aggregate
-    debian:
-      title: Debian Preseed Installers
-      hidden: False
-      files:
-        initrd.gz:
-          source: http://ftp.debian.org/debian/dists/stable/main/installer-amd64/current/images/netboot/debian-installer/amd64/initrd.gz
-          source_hash: sha256=8c29f48b0bed49477775a1640be6f9f0271ad10678115e3a1076192fc715a967
-        linux:
-          source: http://ftp.debian.org/debian/dists/stable/main/installer-amd64/current/images/netboot/debian-installer/amd64/linux
-          source_hash: sha256=951cea84dd488e3d4bfd7b3c55373fc48f4f21c5404a9204a72993ac3aa169d4
-      auto_exit_section: True
-      auto_failed_section: Failed
-      sections:
-        - start:
-            menu:
-              name: 'select'
-              items:
-                - label: Available Installers - All Destructive
-                  gap: True
-                - name: debian_install_cloud
-                  label: 1-Debian Base for Cloud Node
-                  key: 1
-                - name: debian_install_ask
-                  label: 2-Debian Base - Prompted for D-I Class 
-                  key: 2
-                - gap: True
-                - name: exit
-                  label: x - Exit and return to main menu
-                  key: x
-                  default: True
-                  selected: True
-              choose:
-                timeout: 60000
-                default: x
-        - debian_install_cloud:
-            commands:
-              - "set classes cloudnode"
-              - "set hostname cloudnode"
-              - "set domain local"
-              - "echo -n Hostname (no domain) for install: && read hostname"
-              - "goto install"
-        - debian_install_ask:
-            commands:
-              - "set hostname cloudnode"
-              - "set domain local"
-              - "echo -n Classes for Preseed: && read classes"
-              - "echo -n Hostname (no domain) for install: && read hostname"
-              - "goto install"
-        - install:
-            commands:
-              - "set base-url /boot/debian"
-              - "echo Starting network boot for preseed of ${hostname}.${domain} with classes ${classes}"
-              - "kernel ${base-url}/linux"
-              - "initrd ${base-url}/initrd.gz"
-              - "imgargs linux vga=788 interface=auto hostname=${hostname} domain=${domain} netcfg/dhcp_timeout=60 priority=high auto=true url=${boot-url} classes=cloudnode"
-              - "boot || goto failed"
-              - "goto start"
-    ubuntu:
-      title: Ubuntu Preseed Installers
-      hidden: False
-      files:
-        initrd.gz:
-          source: http://archive.ubuntu.com/ubuntu/dists/xenial-updates/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/initrd.gz
-          source_hash: sha256=d5b9d85215e1918e4702363a95001693a78dfd88408bfa17bdc2ba29749fd15d
-        linux:
-          source: http://archive.ubuntu.com/ubuntu/dists/xenial-updates/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/linux
-          source_hash: sha256=67e4232524bc917c1f774297793bf35f68153069a685fa622c0dc08d60737c9e
-      auto_exit_section: True
-      auto_failed_section: Failed
-      sections:
-        - start:
-            menu:
-              name: 'select'
-              items:
-                - label: Available Installers - All Destructive
-                  gap: True
-                - name: ubuntu_install_cloud
-                  label: 1-Ubuntu Base for Cloud Node
-                  key: 1
-                - name: ubuntu_install_ask
-                  label: 2-Ubuntu Base - Prompted for D-I Class
-                  key: 2
-                - gap: True
-                - name: exit
-                  label: Exit and return to main menu
-              choose:
-                timeout: 60000
-                default: x
-        - ubuntu_install_cloud:
-            commands:
-              - "set classes cloudnode"
-              - "set hostname cloudnode"
-              - "set domain local"
-              - "echo -n Hostname (no domain) for install: && read hostname"
-              - "goto install"
-        - ubuntu_install_ask:
-            commands:
-              - "echo Starting Ubuntu Stable network boot"
-              - "set hostname cloudnode"
-              - "set domain local"
-              - "echo -n Hostname (no domain) for install: && read hostname"
-              - "goto install"
-        - install:
-            commands:
-              - "set base-url /boot/ubuntu"
-              - "echo Starting network boot for preseed of ${hostname}.${domain} with classes ${classes}"
-              - "kernel ${base-url}/linux"
-              - "initrd ${base-url}/initrd.gz"
-              - "imgargs linux vga=788 interface=auto hostname=${hostname} domain=${domain} netcfg/dhcp_timeout=60 priority=high auto=true url=${boot-url} classes=cloudnode"
-              - "boot || goto failed"
-              - "goto start"
-
-
+ipxe:
+  lookup:
+    pkgs:
+      - tftp-server
+      - ipxe-bootimgs
+      - ipxe-roms-qemu
+      - ipxe-roms
+      - syslinux
+      - syslinux-tftpboot
+      - syslinux-extlinux
+    locations:
+      web_root: '/var/www/html/ipxe'
+      tftp_root: '/var/lib/tftpboot/ipxe'
+      boot_images: '/usr/share/ipxe'
+  copy:
+    boot_images:
+      - ipxe.lkrn
+      - undionly.kpxe
+    web_content: salt://files/ipxe/web
+  config:
+    blah:
+      name: blah_other
+      source: salt://files/ipxe/templates/blah.ipxe
+      template: jinja
+      context:
+        data_structure:
+          blah: 1234
+        other_data:
+          blah: 1234

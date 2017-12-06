@@ -1,10 +1,5 @@
-{## Start with  defaults from defaults.yaml ##}
 {% import_yaml "ipxe/defaults.yaml" as defaults %}
 
-{##
-Setup variable using grains['os_family'] based logic, only add key:values here
-that differ from whats in defaults.yaml
-##}
 {% set os_family_map = salt['grains.filter_by']({
     'Debian': {},
     'RedHat': {},
@@ -13,10 +8,6 @@ that differ from whats in defaults.yaml
   }, grain='os_family', merge=salt['pillar.get']('ipxe'))
 %}
 
-
-{## Merge the pillar into the defaults, overwriting if exists   ##}
-{## Because there is no built in deep merge, we have to do each ##}
-{## dictionary individually or we would loose the default k,v   ##}
 {% do defaults.ipxe.lookup.update(os_family_map.lookup) if os_family_map.lookup is defined %}
-{% do defaults.ipxe.scripts.update(os_family_map.scripts) if os_family_map.scripts is defined %}
+
 {% set ipxe = defaults.ipxe %}
