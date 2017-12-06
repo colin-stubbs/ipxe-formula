@@ -49,7 +49,7 @@ ipxe-{{ ipxe_settings.lookup.locations.web_root }}:
 ipxe-web-content-restorecon:
   cmd.run:
     - name: restorecon -R {{ ipxe_settings.lookup.locations.web_root }}
-    - watch:
+    - onchanges:
       - file: ipxe-{{ ipxe_settings.lookup.locations.web_root }}
 {% endif %}
 {% endif %}
