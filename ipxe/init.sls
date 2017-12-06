@@ -8,29 +8,29 @@ ipxe-pkgs:
     - pkgs: {{ ipxe_settings.lookup.pkgs }}
 {% endif %}
 
-{% if 'copy' in ipxe_settings %}
-{% if 'boot_images' in ipxe_settings.copy %}
-{% for boot_image in ipxe_settings.copy.boot_images %}
+{% if 'distribute' in ipxe_settings %}
+{% if 'boot_images' in ipxe_settings.distribute %}
+{% for boot_image in ipxe_settings.distribute.boot_images %}
 ipxe-boot-image-{{ boot_image }}:
   file.managed:
     - source: {{ ipxe_settings.lookup.locations.boot_images }}/{{ boot_image }}
     - name: {{ ipxe_settings.lookup.locations.tftp_root }}/{{ boot_image }}
-    - user: {{ ipxe_settings.copy.user|default('root') }}
-    - group: {{ ipxe_settings.copy.group|default('root') }}
-    - mode: {{ ipxe_settings.copy.mode|default('0444') }}
+    - user: {{ ipxe_settings.distribute.user|default('root') }}
+    - group: {{ ipxe_settings.distribute.group|default('root') }}
+    - mode: {{ ipxe_settings.distribute.mode|default('0444') }}
 {% endfor %}
 {% endif %}
 
-{% if 'web_content' in ipxe_settings.copy %}
+{% if 'web_content' in ipxe_settings.distribute %}
 ipxe-{{ ipxe_settings.lookup.locations.web_root }}:
   file.directory:
     - makedirs: True
     - name: {{ ipxe_settings.lookup.locations.web_root }}
-    - source: {{ ipxe_settings.copy.web_content }}
-    - user: {{ ipxe_settings.copy.user|default('root') }}
-    - group: {{ ipxe_settings.copy.group|default('root') }}
-    - dir_mode: {{ ipxe_settings.copy.dir_mode|default('0755') }}
-    - file_mode: {{ ipxe_settings.copy.file_mode|default('0444') }}
+    - source: {{ ipxe_settings.distribute.web_content }}
+    - user: {{ ipxe_settings.distribute.user|default('root') }}
+    - group: {{ ipxe_settings.distribute.group|default('root') }}
+    - dir_mode: {{ ipxe_settings.distribute.dir_mode|default('0755') }}
+    - file_mode: {{ ipxe_settings.distribute.file_mode|default('0444') }}
     - recurse:
       - user
       - group
